@@ -1,7 +1,7 @@
 from flask import jsonify, request
 
-from exchange_book import ExangeBook
-from helper import is_isbn_or_key
+from app.spider.exchange_book import ExangeBook
+from app.libs.helper import is_isbn_or_key
 from . import web
 from app.forms.book import SearchForm
 
