@@ -2,6 +2,7 @@ from flask import jsonify, request
 
 from app.spider.exchange_book import ExangeBook
 from app.libs.helper import is_isbn_or_key
+from app.view_modules.book import BookViewModel
 from . import web
 from app.forms.book import SearchForm
 
@@ -22,8 +23,10 @@ def search():
         isbn_or_key = is_isbn_or_key(q)
         if isbn_or_key == 'isbn':
             result = ExangeBook.search_by_isbn(q)
+            result = BookViewModel.package_single(result,q)
         else:
             result = ExangeBook.search_by_keyword(q,page)
+            result = BookViewModel.package_collections(result,q)
         return jsonify(result)
     else:
         return jsonify(form.errors)
