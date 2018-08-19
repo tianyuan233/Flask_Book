@@ -1,10 +1,13 @@
+import json
+
 from flask import jsonify, request
 
-from app.spider.exchange_book import ExangeBook
-from app.libs.helper import is_isbn_or_key
-from app.view_modules.book import BookViewModel
-from . import web
 from app.forms.book import SearchForm
+from app.libs.helper import is_isbn_or_key
+from app.spider.exchange_book import ExBook
+from app.view_modules.book import BookCollection
+from . import web
+
 
 @web.route('/book/search')
 def search():
@@ -17,16 +20,17 @@ def search():
     """
     # q = request.args['q']
     form = SearchForm(request.args)
+    books = BookCollection()
     if form.validate():
         q = form.q.data.strip()
         page = form.page.data
         isbn_or_key = is_isbn_or_key(q)
+        ex_book = ExBook()
         if isbn_or_key == 'isbn':
-            result = ExangeBook.search_by_isbn(q)
-            result = BookViewModel.package_single(result,q)
+            ex_book.search_by_isbn(q)
         else:
-            result = ExangeBook.search_by_keyword(q,page)
-            result = BookViewModel.package_collections(result,q)
-        return jsonify(result)
+            ex_book.search_by_keyword(q, page)
+        books.fill(ex_book, q)
+        return json.dumps(books, default=lambda o:o.__dict__)
     else:
         return jsonify(form.errors)
