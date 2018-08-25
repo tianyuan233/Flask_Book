@@ -5,7 +5,7 @@ from flask import request, render_template, flash
 from app.forms.book import SearchForm
 from app.libs.helper import is_isbn_or_key
 from app.spider.exchange_book import ExBook
-from app.view_modules.book import BookCollection
+from app.view_modules.book import BookCollection, BookViewModel
 from . import web
 
 
@@ -41,5 +41,12 @@ def search():
 
 @web.route('/book/<isbn>/detail')
 def book_detail(isbn):
-    pass
+    """
+    :param isbn: isbn为参数
+    :return:
+    """
+    ex_book = ExBook()
+    ex_book.search_by_isbn(isbn)
+    book = BookViewModel(ex_book.first)
+    return render_template('book_detail.html', book=book, wishes=[],gifts=[])
 
