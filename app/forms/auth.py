@@ -14,6 +14,7 @@ class RegisterForm(Form):
     password = PasswordField('密码', validators=[
         DataRequired(), Length(6, 20)])
 
+    # 自定义验证函数命名规则 validate_ + '字段名'
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('电子邮件已被注册')
@@ -21,3 +22,10 @@ class RegisterForm(Form):
     def validate_nickname(self, field):
         if User.query.filter_by(nickname=field.data).first():
             raise ValidationError('昵称已存在')
+
+
+class LoginForm(Form):
+    email = StringField('电子邮件', validators=[DataRequired(), Length(1, 64),
+                                            Email(message='电子邮箱不符合规范')])
+    password = PasswordField('密码', validators=[
+        DataRequired(message='密码不可以为空，请输入你的密码')])
