@@ -1,5 +1,5 @@
 from . import web
-
+from flask_login import login_required
 __author__ = '七月'
 
 
@@ -9,6 +9,7 @@ def my_wish():
 
 
 @web.route('/wish/book/<isbn>')
+@login_required
 def save_to_wish(isbn):
     pass
 
