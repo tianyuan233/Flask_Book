@@ -1,10 +1,12 @@
+from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String, Boolean, Float
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from app import login_manager
 from app.models.base import Base
 
 
-class User(Base):
+class User(UserMixin, Base):
     __tablename__ = 'user'
     # __bind_key__ = 'fisher'
 
@@ -31,3 +33,8 @@ class User(Base):
 
     def check_password(self, raw):
         return check_password_hash(self._password, raw)
+
+
+@login_manager.user_loader
+def get_user(uid):
+    return User.query.get(int(uid))
