@@ -1,11 +1,13 @@
-import json
-
 from flask import request, render_template, flash
+from flask_login import current_user
 
 from app.forms.book import SearchForm
 from app.libs.helper import is_isbn_or_key
+from app.models.gift import Gift
+from app.models.wish import Wish
 from app.spider.exchange_book import ExBook
 from app.view_modules.book import BookCollection, BookViewModel
+from app.view_modules.trade import TradeInfo
 from . import web
 
 
@@ -45,8 +47,31 @@ def book_detail(isbn):
     :param isbn: isbn为参数
     :return:
     """
+
+    has_in_gifts = False
+    has_in_wishes = False
+
+    if current_user.is_authenticated:
+        # 如果未登录，current_user将是一个匿名用户对象
+        if Gift.query.filter_by(uid=current_user.id, isbn=isbn,
+                                launched=False).first():
+            has_in_gifts = True
+        if Wish.query.filter_by(uid=current_user.id, isbn=isbn,
+                                launched=False).first():
+            has_in_wishes = True
+
+    trade_wishes = Wish.query.filter_by(isbn=isbn, launched=False).all()
+    trade_gifts = Gift.query.filter_by(isbn=isbn, launched=False).all()
+
+    trade_wishes_model = TradeInfo(trade_wishes)
+    trade_gifts_model = TradeInfo(trade_gifts)
+
     ex_book = ExBook()
     ex_book.search_by_isbn(isbn)
     book = BookViewModel(ex_book.first)
-    return render_template('book_detail.html', book=book, wishes=[],gifts=[])
-
+    return render_template('book_detail.html', book=book,
+                           wishes=trade_wishes_model,
+                           gifts=trade_gifts_model,
+                           has_in_gifts=has_in_gifts,
+                           has_in_wishes=has_in_wishes
+                           )
