@@ -23,7 +23,7 @@ class Base(db.Model):
     """
     __abstract__ = True : 即表示不会创建 base这张表
     status default=1 类变量
-    __init__函数中的create_time是实例变量
+    __init__函数中的 create_time是实例变量
     """
     __abstract__ = True
     create_time = Column('create_time', Integer)
