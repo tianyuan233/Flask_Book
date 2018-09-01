@@ -26,7 +26,7 @@ class Gift(Base):
         gift_list = Gift.query.filter_by(
             launched=False).group_by(
             Gift.isbn).order_by(
-            Gift.create_time).limit(
+            desc(Gift.create_time)).limit(
             current_app.config['RECENT_BOOK_PER_PAGE']).distinct().all()
         # view_model = GiftsViewModel.recent(gift_list)
         return gift_list
