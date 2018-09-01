@@ -1,8 +1,9 @@
 from flask import current_app
-from sqlalchemy import Column, String, Boolean, Integer, ForeignKey, desc
+from sqlalchemy import Column, String, Boolean, Integer, ForeignKey, desc, func
 from sqlalchemy.orm import relationship
 
-from app.models.base import Base
+from app.models.base import Base, db
+from app.models.wish import Wish
 from app.spider.exchange_book import ExBook
 
 
@@ -14,6 +15,24 @@ class Gift(Base):
     user = relationship('User')
     isbn = Column(String(13))
     launched = Column(Boolean, default=False)
+
+    @classmethod
+    def get_my_gift(cls, uid):
+        gifts = Gift.query.filter_by(uid=uid, launched=False).order_by(
+            desc(Gift.create_time)
+        ).all()
+        return gifts
+
+    # @classmethod
+    # def get_wish_counts(cls, isbn_list):
+    #     count_list = db.session.query(func.count(Wish.id), Wish.isbn).filter(
+    #         Wish.launched == False,
+    #         Wish.status == 1,
+    #         Wish.isbn.in_(isbn_list)
+    #     ).group_by(
+    #         Wish.isbn
+    #     ).all()
+    #     return count_list
 
     @property
     def book(self):

@@ -3,12 +3,21 @@ from flask_login import login_required, current_user
 
 from app.models.base import db
 from app.models.gift import Gift
+from app.models.wish import Wish
 from . import web
 
 
 @web.route('/my/gifts')
 @login_required
 def my_gifts():
+    uid = current_user.id
+    #我添加到gift中的数据
+    gifts_of_mine = Gift.get_my_gift(uid)
+
+    isbn_list = [gift.isbn for gift in gifts_of_mine]
+    print(isbn_list)
+    wish_count_list = Wish.get_wish_counts(isbn_list)
+    print(wish_count_list)
     return 'test'
 
 
