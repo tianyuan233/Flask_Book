@@ -28,7 +28,7 @@ class MyGifts:
             }
             return r
 
-
-class MyGift:
-    def __init__(self):
-        pass
+#
+# class MyGift:
+#     def __init__(self):
+#         pass

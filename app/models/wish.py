@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Boolean, String, Integer, ForeignKey, func
+from flask import current_app
+from sqlalchemy import Column, Boolean, String, Integer, ForeignKey, func, desc
 from sqlalchemy.orm import relationship
 
 from app.models.base import Base, db
+from app.spider.exchange_book import ExBook
 
 
 class Wish(Base):
@@ -24,3 +26,26 @@ class Wish(Base):
         ).all()
         count_list = [{'count': res[0], 'isbn': res[1]} for res in count_list]
         return count_list
+    #######
+    @classmethod
+    def get_my_wish(cls, uid):
+        wishes = Wish.query.filter_by(uid=uid, launched=False).order_by(
+            desc(Wish.create_time)
+        ).all()
+        return wishes
+
+    @property
+    def book(self):
+        ex_book = ExBook()
+        ex_book.search_by_isbn(self.isbn)
+        return ex_book.first
+
+    @classmethod
+    def recent(cls):
+        wish_list = Wish.query.filter_by(
+            launched=False).group_by(
+            Wish.isbn).order_by(
+            desc(Wish.create_time)).limit(
+            current_app.config['RECENT_BOOK_PER_PAGE']).distinct().all()
+        # view_model = GiftsViewModel.recent(gift_list)
+        return wish_list
