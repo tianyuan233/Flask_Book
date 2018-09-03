@@ -1,9 +1,10 @@
-from flask import current_app, flash, redirect, url_for
+from flask import current_app, flash, redirect, url_for, render_template
 from flask_login import login_required, current_user
 
 from app.models.base import db
 from app.models.gift import Gift
 from app.models.wish import Wish
+from app.view_modules.gift import MyGifts
 from . import web
 
 
@@ -11,15 +12,16 @@ from . import web
 @login_required
 def my_gifts():
     uid = current_user.id
-    #我添加到gift中的数据
+    # 我添加到gift中的数据
     gifts_of_mine = Gift.get_my_gift(uid)
-
+    # 我添加到gift中的书籍的isbn 返回一个列表
     isbn_list = [gift.isbn for gift in gifts_of_mine]
     print(isbn_list)
     wish_count_list = Wish.get_wish_counts(isbn_list)
     print(wish_count_list)
-    return 'test'
+    view_model = MyGifts(gifts_of_mine, wish_count_list)
 
+    return render_template('my_gifts.html',gifts=view_model.gifts)
 
 @web.route('/gifts/book/<isbn>')
 @login_required
