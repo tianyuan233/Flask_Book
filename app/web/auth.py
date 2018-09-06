@@ -50,6 +50,8 @@ def forget_password_request():
                        'email/reset_password.html',
                        user=user,
                        token=user.generate_token())
+            flash('一封邮件已发送至' + account_email + ' 请注意查收')
+            # return redirect(url_for('web.login'))
     return render_template('auth/forget_password_request.html', form=form)
 
 
@@ -64,10 +66,8 @@ def forget_password(token):
             flash('你的密码已更新,请使用新密码登录')
             return redirect(url_for('web.login'))
         else:
-            return redirect(url_for('web.index'))
-    return render_template('auth/forget_password.html')
-    pass
-
+            flash('重置密码失败')
+    return render_template('auth/forget_password.html',form=form)
 
 @web.route('/change/password', methods=['GET', 'POST'])
 def change_password():
