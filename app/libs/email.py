@@ -1,8 +1,13 @@
+from flask import current_app, render_template
+
 from app import mail
 from flask_mail import Message
-#to, subject, template, **kwargs
-def send_email():
-    msg = Message('测试',sender='1406282384@qq.com',body='Tets',
-                  recipients=['17691076523@163.com'])
+#
+def send_email(to, subject, template, **kwargs):
+    msg = Message('[ZTY]' + '' + subject,
+                  sender=current_app.config['MAIL_USERNAME'],
+                  recipients=[to])
+    msg.html = render_template(template,**kwargs)
+
     mail.send(msg)
 

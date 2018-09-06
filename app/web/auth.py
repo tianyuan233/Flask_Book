@@ -2,9 +2,9 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user
 
 from app.forms.auth import RegisterForm, LoginForm, EmailForm
+from app.libs.email import send_email
 from app.models.base import db
 from app.models.user import User
-from app.libs.email import send_email
 from . import web
 
 
@@ -45,10 +45,12 @@ def forget_password_request():
         if form.validate():
             account_email = form.email.data
             user = User.query.filter_by(email=account_email).first_or_404()
-            send_email()
-        pass
+            send_email(form.email.data,
+                       '重置密码',
+                       'email/reset_password.html',
+                       user=user,
+                       token='qweqweqweqweqweqwe')
     return render_template('auth/forget_password_request.html', form=form)
-    pass
 
 
 @web.route('/reset/password/<token>', methods=['GET', 'POST'])

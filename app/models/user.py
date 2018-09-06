@@ -1,7 +1,8 @@
+from flask import current_app
 from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String, Boolean, Float
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from app import login_manager
 from app.libs.helper import is_isbn_or_key
 from app.models.base import Base
@@ -55,6 +56,13 @@ class User(UserMixin, Base):
             return True
         else:
             return False
+
+    def generate_token(self,expiration=600):
+        #序列化器
+        s = Serializer(current_app.config['SECRET_KEY'],
+                       expiration)
+
+        pass
 
 
 
