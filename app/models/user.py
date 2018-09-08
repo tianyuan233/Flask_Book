@@ -78,6 +78,15 @@ class User(UserMixin, Base):
         db.session.commit()
         return True
 
+    def can_send_gift(self):
+        if self.beans < 1:
+            return False
+        success_gift_count = Gift.query.filter_by(
+            uid=self.id,launched=True
+        ).count()
+
+
+
 
 @login_manager.user_loader
 def get_user(uid):

@@ -13,7 +13,14 @@ class Gift(Base):
     uid = Column(Integer, ForeignKey('user.id'), nullable=False)
     user = relationship('User')
     isbn = Column(String(13))
+    # True 表示礼物已经被赠送送出去
     launched = Column(Boolean, default=False)
+
+    def is_yourself_gift(self, uid):
+        if self.uid == uid:
+            return True
+        else:
+            return False
 
     @classmethod
     def get_gift_counts(cls, isbn_list):
