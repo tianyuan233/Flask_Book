@@ -1,3 +1,5 @@
+from math import floor
+
 from flask import current_app
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -5,8 +7,10 @@ from sqlalchemy import Column, Integer, String, Boolean, Float
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import login_manager
+from app.libs.enums import PendingStatus
 from app.libs.helper import is_isbn_or_key
 from app.models.base import Base, db
+from app.models.drift import Drift
 from app.models.gift import Gift
 from app.models.wish import Wish
 from app.spider.exchange_book import ExBook
@@ -82,10 +86,27 @@ class User(UserMixin, Base):
         if self.beans < 1:
             return False
         success_gift_count = Gift.query.filter_by(
-            uid=self.id,launched=True
+            uid=self.id, launched=True
+        ).count()
+        success_receive_count = Drift.query.filter_by(
+            requester_id=self.id,
+            pending=PendingStatus.Success
         ).count()
 
+        # 每索取两本书，必须送出一本书
+        if floor(success_receive_count / 2) <= floor(success_gift_count):
+            return True
+        else:
+            return False
 
+    @property
+    def summary(self):
+        return dict(
+            nickname=self.nickname,
+            beans=self.beans,
+            email=self.email,
+            send_receive=str(self.send_counter) + '/' + str(self.receive_counter)
+        )
 
 
 @login_manager.user_loader

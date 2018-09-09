@@ -24,7 +24,7 @@ class Drift(Base):
     isbn = Column(String(13))
     book_title = Column(String(50))
     book_author = Column(String(30))
-    book_img = Column(String(50))
+    book_img = Column(String(100))
     # 请求者信息
     requester_id = Column(Integer)
     requester_nickname = Column(String(20))
