@@ -20,6 +20,7 @@ class Query(BaseQuery):
     """
     改写 filter_by 默认加入 status == 1 的查询条件
     """
+
     def filter_by(self, **kwargs):
         if 'status' not in kwargs.keys():
             kwargs['status'] = 1
@@ -41,6 +42,9 @@ class Base(db.Model):
 
     def __init__(self):
         self.create_time = int(datetime.now().timestamp())
+
+    def delete(self):
+        self.status = 0
 
     def set_attrs(self, attrs_dict):
         for key, value in attrs_dict.items():

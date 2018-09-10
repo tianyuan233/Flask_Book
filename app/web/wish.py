@@ -24,8 +24,6 @@ def my_wish():
 
     return render_template('my_wish.html', wishes=view_model.wishes)
 
-    pass
-
 
 @web.route('/wish/book/<isbn>')
 @login_required
@@ -50,4 +48,10 @@ def satisfy_wish(wid):
 
 @web.route('/wish/book/<isbn>/redraw')
 def redraw_from_wish(isbn):
-    pass
+    wish = Wish.query.filter_by(isbn=isbn).first()
+    if not wish:
+        flash('该心愿不存在，删除失败')
+    else:
+        with db.auto_commit():
+            wish.delete()
+    return redirect(url_for('web.my_wish'))

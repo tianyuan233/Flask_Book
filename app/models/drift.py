@@ -1,6 +1,7 @@
 # from app.libs.enums import PendingStatus
 from sqlalchemy import Column, String, Integer, SmallInteger
 
+from app.libs.enums import PendingStatus
 from app.models.base import Base
 
 
@@ -35,9 +36,6 @@ class Drift(Base):
     gifter_nickname = Column(String(20))
 
     _pending = Column('pending', SmallInteger, default=1)
-
-    # gift_id = Column(Integer, ForeignKey('gift.id'))
-    # gift = relationship('Gift')
 
     @property
     def pending(self):
