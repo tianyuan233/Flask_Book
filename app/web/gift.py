@@ -18,12 +18,10 @@ def my_gifts():
     gifts_of_mine = Gift.get_my_gift(uid)
     # 我添加到gift中的书籍的isbn 返回一个列表
     isbn_list = [gift.isbn for gift in gifts_of_mine]
-    print(isbn_list)
     wish_count_list = Wish.get_wish_counts(isbn_list)
-    print(wish_count_list)
     view_model = MyGifts(gifts_of_mine, wish_count_list)
+    return render_template('my_gifts.html', gifts=view_model.gifts)
 
-    return render_template('my_gifts.html',gifts=view_model.gifts)
 
 @web.route('/gifts/book/<isbn>')
 @login_required
@@ -43,6 +41,7 @@ def save_to_gifts(isbn):
 
 
 @web.route('/gifts/<gid>/redraw')
+@login_required
 def redraw_from_gifts(gid):
     gift = Gift.query.filter_by(id=gid, launched=False).first()
     if not gift:

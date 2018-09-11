@@ -14,13 +14,11 @@ from . import web
 @web.route('/book/search')
 def search():
     """
-
     :param q: 关键字或者 isbn
     :param page:
     :return:
     ?q=参数
     """
-    # q = request.args['q']
     form = SearchForm(request.args)
     books = BookCollection()
     if form.validate():
@@ -33,11 +31,8 @@ def search():
         else:
             ex_book.search_by_keyword(q, page)
         books.fill(ex_book, q)
-
-        # return json.dumps(books, default=lambda o:o.__dict__)
     else:
         flash('搜索的关键字未找到，请重新搜索')
-        # return jsonify(form.errors)
     return render_template('search_result.html', books=books)
 
 
@@ -47,7 +42,6 @@ def book_detail(isbn):
     :param isbn: isbn为参数
     :return:
     """
-
     has_in_gifts = False
     has_in_wishes = False
 
@@ -73,5 +67,4 @@ def book_detail(isbn):
                            wishes=trade_wishes_model,
                            gifts=trade_gifts_model,
                            has_in_gifts=has_in_gifts,
-                           has_in_wishes=has_in_wishes
-                           )
+                           has_in_wishes=has_in_wishes)

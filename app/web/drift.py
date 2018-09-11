@@ -13,16 +13,13 @@ from app.view_modules.book import BookViewModel
 from app.view_modules.drift import DriftCollection
 from . import web
 
-__author__ = '七月'
-
-
 @web.route('/drift/<int:gid>', methods=['GET', 'POST'])
 @login_required
 def send_drift(gid):
     current_gift = Gift.query.get_or_404(gid)
     if current_gift.is_yourself_gift(current_user.id):
         flash('这本书是你自己的，不能跟自己索要哦~')
-        return redirect(url_for('web.detail', isbn=current_gift.isbn))
+        return redirect(url_for('web.book_detail', isbn=current_gift.isbn))
     can = current_user.can_send_gift()
     if not can:
         return render_template('not_enough_beans.html', beans=current_user.beans)
@@ -32,6 +29,7 @@ def send_drift(gid):
         send_email(current_gift.user.email, '有人想要一本书', 'email/get_gift.html',
                    wisher=current_user,
                    gift=current_gift)
+        return redirect(url_for('web.pending'))
     gifter = current_gift.user.summary
 
     return render_template('drift.html',
@@ -42,6 +40,7 @@ def send_drift(gid):
 
 
 @web.route('/pending')
+@login_required
 def pending():
     # 查询条件的或关系
     drifts = Drift.query.filter(
@@ -53,6 +52,7 @@ def pending():
 
 
 @web.route('/drift/<int:did>/reject')
+@login_required
 def reject_drift(did):
     """
         拒绝请求，只有书籍赠送者才能拒绝请求
@@ -69,6 +69,7 @@ def reject_drift(did):
 
 
 @web.route('/drift/<int:did>/redraw')
+@login_required
 def redraw_drift(did):
     """
         撤销请求，只有书籍请求者才可以撤销请求
@@ -87,6 +88,7 @@ def redraw_drift(did):
 
 
 @web.route('/drift/<int:did>/mailed')
+@login_required
 def mailed_drift(did):
     """
         确认邮寄，只有书籍赠送者才可以确认邮寄

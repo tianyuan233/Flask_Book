@@ -21,14 +21,10 @@ class MyGifts:
             if gift.isbn == wish_count['isbn']:
                 count = wish_count['count']
 
-            r = {
-                'wishes_count': count,
-                'book': BookViewModel(gift.book),
-                'id': gift.id
-            }
-            return r
+        r = {
+            'wishes_count': count,
+            'book': BookViewModel(gift.book),
+            'id': gift.id
+        }
+        return r
 
-#
-# class MyGift:
-#     def __init__(self):
-#         pass
